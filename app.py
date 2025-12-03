@@ -4,7 +4,7 @@ from datetime import datetime, date
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://username:password@localhost/pharmacy_testing'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost/pharmacy_testing'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -94,7 +94,7 @@ def home():
     return render_template('home.html')
 
 @app.route('/doctor')
-def doctor_dashboard():
+def doctor():
     # Get statistics
     total_patients = Patient.query.count()
     pending_prescriptions = Prescription.query.join(Order).filter(Order.status == 'Scheduled').count()
@@ -234,10 +234,6 @@ def init_db():
     """Initialize the database."""
     db.create_all()
     print('Database initialized.')
-
-@app.route('/')
-def home():
-    return render_template('home.html')
 
 if __name__ == '__main__':
     app.run()

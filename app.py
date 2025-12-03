@@ -1,10 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, date
+import os
+from dotenv import load_dotenv
+
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:password@localhost/pharmacy_testing'
+
+load_dotenv()
+# app.config['SECRET_KEY'] = 'your-secret-key-here'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -93,7 +98,7 @@ class Order(db.Model):
 def home():
     return render_template('home.html')
 
-@app.route('/doctor')
+@app.route('/doctor_dashboard')
 def doctor():
     # Get statistics
     total_patients = Patient.query.count()
@@ -132,7 +137,7 @@ def doctor():
                          recent_prescriptions=recent_prescriptions,
                          today_appointments=today_appointments)
 
-@app.route('/patient')
+@app.route('/patient_dashboard')
 def patient_dashboard():
     # For demo purposes, using a dummy patient ID
     patient_id = 1
@@ -193,7 +198,7 @@ def patient_dashboard():
                          recent_orders=recent_orders,
                          upcoming_refills=upcoming_refills)
 
-@app.route('/pharmacist')
+@app.route('/pharmacist_dashboard')
 def pharmacist_dashboard():
     # Get statistics
     pending_orders = Order.query.filter_by(status='Scheduled').count()
@@ -228,12 +233,5 @@ def pharmacist_dashboard():
                          prescription_queue=prescription_queue,
                          all_drugs=all_drugs)
 
-
-@app.cli.command()
-def init_db():
-    """Initialize the database."""
-    db.create_all()
-    print('Database initialized.')
-
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pharmacist Page</title>
+    <title>{% block title %} Pharmacist Page {% endblock %}</title>
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
       rel="stylesheet"
@@ -38,7 +38,7 @@
             <li class="nav-item">
               <a
                 class="nav-link {% if request.endpoint == 'home' %}active{% endif %}"
-                href="{{ url_for('home') }}"
+                href="/"
               >
                 <i class="bi bi-house"></i> Home
               </a>
@@ -46,7 +46,7 @@
             <li class="nav-item">
               <a
                 class="nav-link {% if request.endpoint == 'doctor_dashboard' %}active{% endif %}"
-                href="{{ url_for('doctor') }}"
+                href="/doctor_dashboard"
               >
                 <i class="bi bi-person-badge"></i> Doctor Portal
               </a>
@@ -54,7 +54,7 @@
             <li class="nav-item">
               <a
                 class="nav-link {% if request.endpoint == 'pharmacist_dashboard' %}active{% endif %}"
-                href="{{ url_for('pharmacist_dashboard') }}"
+                href="/pharmacist_dashboard"
               >
                 <i class="bi bi-capsule"></i> Pharmacist Portal
               </a>
@@ -62,7 +62,7 @@
             <li class="nav-item">
               <a
                 class="nav-link {% if request.endpoint == 'patient_dashboard' %}active{% endif %}"
-                href="{{ url_for('patient_dashboard') }}"
+                href="/patient_dashboard"
               >
                 <i class="bi bi-person-circle"></i> Patient Portal
               </a>

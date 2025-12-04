@@ -15,7 +15,6 @@ CREATE table Patient
 	(patient_id INT UNIQUE AUTO_INCREMENT,
 	name VARCHAR(30),
 	dob date,
-	balance FLOAT(0),
 	doctor_id INT,
 	primary_address VARCHAR(100),
 	PRIMARY KEY(patient_id), 

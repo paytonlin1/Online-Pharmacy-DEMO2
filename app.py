@@ -235,13 +235,6 @@ def pharmacist_dashboard():
                          out_for_delivery=out_for_delivery)
 
 # Routes for User Input
-@app.route('/patient/balance/<string:patient_name>')
-def get_patient_balance(patient_name):
-    patient = Patient.query.filter_by(name=patient_name).first()
-    if patient:
-        return {'balance': patient.balance}
-    return {'error': 'Patient not found'}, 404
-
 @app.route('/prescriptions/<string:patient_name>')
 def get_prescriptions(patient_name):
     prescriptions = db.session.query(
@@ -357,11 +350,6 @@ def create_prescription():
         drug_id=drug.drug_id,
         dosage=dosage,
     )
-    doctor = Doctor.query.first()
-    
-    if not doctor:
-        flash('No doctor found', 'error')
-        return redirect(url_for('doctor_dashboard'))
     
     db.session.add(new_prescription)
     db.session.commit()

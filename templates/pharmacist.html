@@ -75,7 +75,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2>Pharmacist Dashboard</h2>
-          <p class="text-muted">Welcome back, Payton Lin, RPh</p>
+          <p class="text-muted">Welcome back, {{ pharmacist.name }}, RPh</p>
         </div>
         <button class="btn btn-success">
           <i class="bi bi-box-seam"></i> Process Order
@@ -87,7 +87,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-hourglass-split text-warning stats-icon"></i>
-              <h3>24</h3>
+              <h3>{{ pending_count }}</h3>
               <p class="text-muted mb-0">Pending Orders</p>
             </div>
           </div>
@@ -96,7 +96,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-check-circle text-success stats-icon"></i>
-              <h3>89</h3>
+              <h3>{{ completed_today }}</h3>
               <p class="text-muted mb-0">Completed Today</p>
             </div>
           </div>
@@ -105,7 +105,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-exclamation-triangle text-danger stats-icon"></i>
-              <h3>5</h3>
+              <h3>{{ low_stock_count }}</h3>
               <p class="text-muted mb-0">Low Stock Items</p>
             </div>
           </div>
@@ -114,7 +114,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-truck text-info stats-icon"></i>
-              <h3>15</h3>
+              <h3>{{ out_for_delivery }}</h3>
               <p class="text-muted mb-0">Out for Delivery</p>
             </div>
           </div>
@@ -141,36 +141,21 @@
                     </tr>
                   </thead>
                   <tbody>
+                    {% for order in pending_orders %}
                     <tr>
-                      <td>#1234</td>
-                      <td>Alice Cooper</td>
-                      <td>Azithromycin 250mg</td>
-                      <td>Dr. Smith</td>
-                      <td><span class="badge bg-danger">Urgent</span></td>
+                      <td>#{{ order.order_id }}</td>
+                      <td>{{ order.patient.name }}</td>
                       <td>
-                        <button class="btn btn-sm btn-success">Process</button>
+                        {{ order.prescription.drug.name }} {{
+                        order.prescription.dosage }}mg
                       </td>
-                    </tr>
-                    <tr>
-                      <td>#1235</td>
-                      <td>Bob Martin</td>
-                      <td>Atorvastatin 20mg</td>
-                      <td>Dr. Johnson</td>
+                      <td>{{ order.prescription.doctor.name }}</td>
                       <td><span class="badge bg-warning">Normal</span></td>
                       <td>
                         <button class="btn btn-sm btn-success">Process</button>
                       </td>
                     </tr>
-                    <tr>
-                      <td>#1236</td>
-                      <td>Carol White</td>
-                      <td>Omeprazole 40mg</td>
-                      <td>Dr. Lee</td>
-                      <td><span class="badge bg-info">Standard</span></td>
-                      <td>
-                        <button class="btn btn-sm btn-success">Process</button>
-                      </td>
-                    </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>

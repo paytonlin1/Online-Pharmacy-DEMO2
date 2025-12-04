@@ -20,7 +20,7 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container">
-        <a class="navbar-brand" href="{{ url_for('home') }}">
+        <a class="navbar-brand" href="/">
           <i class="bi bi-heart-pulse-fill text-primary"></i>
           <strong>Online</strong> Pharmacy [DEMO]
         </a>
@@ -75,7 +75,7 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2>Doctor Dashboard</h2>
-          <p class="text-muted">Welcome back, Dr. Smith</p>
+          <p class="text-muted">Welcome back, {{ doctor.name }}</p>
         </div>
         <button class="btn btn-primary">
           <i class="bi bi-plus-circle"></i> New Prescription
@@ -87,7 +87,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-people-fill text-primary stats-icon"></i>
-              <h3>245</h3>
+              <h3>{{ patients|length }}</h3>
               <p class="text-muted mb-0">Total Patients</p>
             </div>
           </div>
@@ -96,7 +96,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-file-text text-success stats-icon"></i>
-              <h3>18</h3>
+              <h3>{{ pending_prescriptions }}</h3>
               <p class="text-muted mb-0">Pending Prescriptions</p>
             </div>
           </div>
@@ -114,7 +114,7 @@
           <div class="card stats-card">
             <div class="card-body">
               <i class="bi bi-clipboard-check text-info stats-icon"></i>
-              <h3>156</h3>
+              <h3>{{ prescriptions|length }}</h3>
               <p class="text-muted mb-0">Prescriptions This Month</p>
             </div>
           </div>
@@ -140,39 +140,27 @@
                     </tr>
                   </thead>
                   <tbody>
+                    {% for prescription in prescriptions %}
                     <tr>
-                      <td>John Doe</td>
-                      <td>Amoxicillin 500mg</td>
+                      <td>{{ prescription.patient.name }}</td>
+                      <td>
+                        {{ prescription.drug.name }} {{ prescription.dosage }}mg
+                      </td>
                       <td>Dec 02, 2024</td>
-                      <td><span class="badge bg-success">Filled</span></td>
+                      <td>
+                        {% if prescription.orders %}
+                        <span class="badge bg-success">Filled</span>
+                        {% else %}
+                        <span class="badge bg-warning">Pending</span>
+                        {% endif %}
+                      </td>
                       <td>
                         <button class="btn btn-sm btn-outline-primary">
                           View
                         </button>
                       </td>
                     </tr>
-                    <tr>
-                      <td>Jane Smith</td>
-                      <td>Lisinopril 10mg</td>
-                      <td>Dec 01, 2024</td>
-                      <td><span class="badge bg-warning">Pending</span></td>
-                      <td>
-                        <button class="btn btn-sm btn-outline-primary">
-                          View
-                        </button>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>Mike Johnson</td>
-                      <td>Metformin 850mg</td>
-                      <td>Nov 30, 2024</td>
-                      <td><span class="badge bg-success">Filled</span></td>
-                      <td>
-                        <button class="btn btn-sm btn-outline-primary">
-                          View
-                        </button>
-                      </td>
-                    </tr>
+                    {% endfor %}
                   </tbody>
                 </table>
               </div>
@@ -186,29 +174,20 @@
               <h5 class="mb-0">Today's Schedule</h5>
             </div>
             <div class="card-body">
+              {% for patient in patients[:3] %}
               <div class="appointment-item">
                 <div class="d-flex justify-content-between">
-                  <strong>Joe Schmoe</strong>
-                  <span class="text-muted">9:00 AM</span>
+                  <strong>{{ patient.name }}</strong>
+                  <span class="text-muted">
+                    {% if loop.index == 1 %}9:00 AM{% elif loop.index == 2
+                    %}10:30 AM{% else %}2:00 PM{% endif %}
+                  </span>
                 </div>
                 <small class="text-muted">General Checkup</small>
               </div>
+              {% if not loop.last %}
               <hr />
-              <div class="appointment-item">
-                <div class="d-flex justify-content-between">
-                  <strong>Nolan Le</strong>
-                  <span class="text-muted">10:30 AM</span>
-                </div>
-                <small class="text-muted">Follow-up</small>
-              </div>
-              <hr />
-              <div class="appointment-item">
-                <div class="d-flex justify-content-between">
-                  <strong>Michael Michael</strong>
-                  <span class="text-muted">2:00 PM</span>
-                </div>
-                <small class="text-muted">Lab Results Review</small>
-              </div>
+              {% endif %} {% endfor %}
             </div>
           </div>
         </div>

@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 app = Flask(__name__)
 
 load_dotenv()
-# app.config['SECRET_KEY'] = 'your-secret-key-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -96,121 +95,92 @@ class Order(db.Model):
 # Routes
 @app.route('/')
 def home():
-    return render_template('home.html')
+    total_patients = Patient.query.count()
+    total_doctors = Doctor.query.count()
+    total_prescriptions = Prescription.query.count()
+    total_pharmacists = Pharmacist.query.count()
+    
+    return render_template('home.html',
+                         total_patients=total_patients,
+                         total_doctors=total_doctors,
+                         total_prescriptions=total_prescriptions,
+                         total_pharmacists=total_pharmacists)
 
 @app.route('/doctor_dashboard')
-def doctor():
-    # Get statistics
-    total_patients = Patient.query.count()
-    pending_prescriptions = Prescription.query.join(Order).filter(Order.status == 'Scheduled').count()
-    prescriptions_this_month = Prescription.query.filter(
-        db.func.month(Order.request_date) == datetime.now().month
-    ).join(Order).count()
+def doctor_dashboard():
+    # For demo purposes, get the first doctor (or use a specific doctor_id)
+    doctor = Doctor.query.first()  # Add this line
     
-    # Get recent prescriptions with patient and drug info
-    recent_prescriptions = db.session.query(
-        Prescription, Patient, Drug, Order
-    ).join(
-        Patient, Prescription.patient_id == Patient.patient_id
-    ).join(
-        Drug, Prescription.drug_id == Drug.drug_id
-    ).outerjoin(
-        Order, Prescription.prescript_id == Order.prescript_id
-    ).order_by(
-        Order.request_date.desc()
-    ).limit(10).all()
+    # Get the doctor's patients
+    patients = Patient.query.filter_by(doctor_id=doctor.doctor_id).all() if doctor else []
     
-    # Get today's appointments (scheduled orders)
-    today_appointments = db.session.query(
-        Patient, Order
-    ).join(
-        Order, Patient.patient_id == Order.patient_id
-    ).filter(
-        Order.request_date == date.today(),
-        Order.status == 'Scheduled'
-    ).all()
+    # Get the doctor's prescriptions
+    prescriptions = Prescription.query.filter_by(doctor_id=doctor.doctor_id).all() if doctor else []
+    
+    # Get pending prescriptions count
+    pending_prescriptions = Prescription.query.filter_by(doctor_id=doctor.doctor_id).join(Order).filter(Order.status == 'Scheduled').count() if doctor else 0
     
     return render_template('doctor.html',
-                         total_patients=total_patients,
-                         pending_prescriptions=pending_prescriptions,
-                         prescriptions_this_month=prescriptions_this_month,
-                         recent_prescriptions=recent_prescriptions,
-                         today_appointments=today_appointments)
+                         doctor=doctor,  # Add this
+                         patients=patients,  # Add this
+                         prescriptions=prescriptions,  # Add this
+                         pending_prescriptions=pending_prescriptions)
 
 @app.route('/patient_dashboard')
 def patient_dashboard():
-    # For demo purposes, using a dummy patient ID
-    patient_id = 1
+    # For demo purposes, using first patient
+    patient = Patient.query.first()
     
-    # Get patient info
-    patient = Patient.query.get(patient_id)
+    if not patient:
+        flash('No patient found in database')
+        return redirect(url_for('home'))
+    
+    # Get prescriptions with drug info
+    prescriptions = db.session.query(Prescription).join(
+        Drug, Prescription.drug_id == Drug.drug_id
+    ).filter(
+        Prescription.patient_id == patient.patient_id
+    ).all()
     
     # Get statistics
-    active_prescriptions = Prescription.query.filter_by(patient_id=patient_id).count()
-    pending_orders = Order.query.filter_by(patient_id=patient_id, status='Scheduled').count()
-    completed_orders = Order.query.filter_by(patient_id=patient_id, status='Completed').count()
+    active_prescriptions = len(prescriptions)
+    pending_orders = Order.query.filter_by(
+        patient_id=patient.patient_id, 
+        status='Scheduled'
+    ).count()
+    completed_orders = Order.query.filter_by(
+        patient_id=patient.patient_id, 
+        status='Completed'
+    ).count()
     
-    # Get active medications (prescriptions with details)
-    active_medications = db.session.query(
-        Prescription, Drug, Doctor
-    ).join(
-        Drug, Prescription.drug_id == Drug.drug_id
-    ).join(
-        Doctor, Prescription.doctor_id == Doctor.doctor_id
-    ).filter(
-        Prescription.patient_id == patient_id
-    ).all()
-    
-    # Get recent orders with details
-    recent_orders = db.session.query(
-        Order, Prescription, Drug
-    ).join(
+    # Get recent orders
+    recent_orders = db.session.query(Order).join(
         Prescription, Order.prescript_id == Prescription.prescript_id
     ).join(
         Drug, Prescription.drug_id == Drug.drug_id
     ).filter(
-        Order.patient_id == patient_id
-    ).order_by(
-        Order.request_date.desc()
-    ).limit(5).all()
-    
-    # Get upcoming refills (scheduled orders)
-    upcoming_refills = db.session.query(
-        Order, Prescription, Drug
-    ).join(
-        Prescription, Order.prescript_id == Prescription.prescript_id
-    ).join(
-        Drug, Prescription.drug_id == Drug.drug_id
-    ).filter(
-        Order.patient_id == patient_id,
-        Order.status == 'Scheduled',
-        Order.request_date >= date.today()
-    ).order_by(
-        Order.request_date
-    ).all()
+        Order.patient_id == patient.patient_id
+    ).order_by(Order.request_date.desc()).limit(5).all()
     
     return render_template('patient.html',
                          patient=patient,
+                         prescriptions=prescriptions,
                          active_prescriptions=active_prescriptions,
                          pending_orders=pending_orders,
                          completed_orders=completed_orders,
-                         active_medications=active_medications,
-                         recent_orders=recent_orders,
-                         upcoming_refills=upcoming_refills)
+                         recent_orders=recent_orders)
 
 @app.route('/pharmacist_dashboard')
 def pharmacist_dashboard():
-    # Get statistics
-    pending_orders = Order.query.filter_by(status='Scheduled').count()
-    completed_today = Order.query.filter(
-        Order.status == 'Completed',
-        Order.request_date == date.today()
-    ).count()
+    # Get a pharmacist (for demo, using first pharmacist)
+    pharmacist = Pharmacist.query.first()
     
-    # Get prescription queue (scheduled orders)
-    prescription_queue = db.session.query(
-        Order, Patient, Prescription, Drug, Doctor
-    ).join(
+    if not pharmacist:
+        flash('No pharmacist found in database')
+        return redirect(url_for('home'))
+    
+    # Get pending orders with all related info
+    pending_orders = db.session.query(Order).join(
         Patient, Order.patient_id == Patient.patient_id
     ).join(
         Prescription, Order.prescript_id == Prescription.prescript_id
@@ -220,18 +190,26 @@ def pharmacist_dashboard():
         Doctor, Prescription.doctor_id == Doctor.doctor_id
     ).filter(
         Order.status == 'Scheduled'
-    ).order_by(
-        Order.request_date
-    ).limit(10).all()
+    ).all()
     
-    # Get all drugs for inventory display 
-    all_drugs = Drug.query.all()
+    # Get statistics
+    pending_count = len(pending_orders)
+    completed_today = Order.query.filter(
+        Order.status == 'Completed',
+        Order.request_date == date.today()
+    ).count()
+    
+    # Dummy data for demo
+    low_stock_count = 3
+    out_for_delivery = 5
     
     return render_template('pharmacist.html',
+                         pharmacist=pharmacist,
                          pending_orders=pending_orders,
+                         pending_count=pending_count,
                          completed_today=completed_today,
-                         prescription_queue=prescription_queue,
-                         all_drugs=all_drugs)
+                         low_stock_count=low_stock_count,
+                         out_for_delivery=out_for_delivery)
 
 if __name__ == '__main__':
     app.run(debug=True)

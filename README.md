@@ -21,7 +21,7 @@ git clone https://github.com/paytonlin1/Online-Pharmacy-DEMO2.git
 python reset.py 
 
 # Install dependencies
-python install -r requirements.txt
+pip install -r requirements.txt
 
 # Run Flask app
 python app.py

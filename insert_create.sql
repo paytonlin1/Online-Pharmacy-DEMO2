@@ -35,6 +35,7 @@ CREATE table prescriptions
 	(prescript_id INT UNIQUE,
 	patient_id INT,
 	doctor_id INT,
+	price FLOAT(0),
     drug_id INT,
 	dosage INT,
     PRIMARY KEY(prescript_id),

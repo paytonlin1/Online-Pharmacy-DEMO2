@@ -45,7 +45,6 @@ class Patient(db.Model):
     patient_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(30))
     dob = db.Column(db.Date)
-    balance = db.Column(db.Float)
     doctor_id = db.Column(db.Integer, db.ForeignKey('doctor.doctor_id'))
     primary_address = db.Column(db.String(100))
     

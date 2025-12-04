@@ -99,23 +99,23 @@ VALUES
 (9, 'Ava Thompson', '1989-01-30'),
 (10, 'Lucas Kim', '1993-06-11');
 
-INSERT into patient(patient_id, name, dob,balance, doctor_id, primary_address)
+INSERT into patient(patient_id, name, dob, doctor_id, primary_address)
 VALUES
-(1, 'Nolan Le', '2004-02-02', 98.70, 7, '123 Holly Circle'),
-(2, 'Jeremy Matloub', '2004-07-20', 52.00, 1, '456 Buckthorn Court'),
-(3, 'Payton Lin', '2001-01-01', 169.45, 3, '72 Rose Drive'),
-(4, 'Samantha Wang',  '2007-08-23', 0, 2, '80 Moonstone Ln'),
-(5, 'Marcus Chen', '2003-04-12', 147.82, 11, '42 Riverside Dr'), 
-(6, 'Emily Rodriguez', '1998-11-30', 203.45, 7, '156 Oak Street'),
-(7, 'James Patterson', '2005-06-15', 89.67, 5, '29 Maple Ave'),
-(8, 'Sofia Gonzalez', '2001-09-08', 256.91, 3, '93 Pine Ridge Rd'),
-(9, 'David Kim', '2006-02-27', 112.34, 9, '67 Cedar Court'),
-(10, 'Isabella Martinez', '1999-12-05', 178.53, 10, '14 Birch Lane'),
-(11, 'Ryan OSullivan', '2004-07-19', 294.76, 5, '201 Willow Way'),
-(12, 'Aisha Patel', '2002-03-14', 45.28, 4, '88 Elmwood Dr'),
-(13, 'Tyler Brooks', '2008-10-22', 167.89, 8, '135 Sunset Blvd'),
-(14, 'Mia Thompson', '2000-05-31', 221.15, 2, '76 Highland Ave'),
-(15, 'Nathan Lee', '2007-01-17', 133.62, 1, '49 Valley View Rd');
+(1, 'Nolan Le', '2004-02-02', 7, '123 Holly Circle'),
+(2, 'Jeremy Matloub', '2004-07-20', 1, '456 Buckthorn Court'),
+(3, 'Payton Lin', '2001-01-01', 3, '72 Rose Drive'),
+(4, 'Samantha Wang',  '2007-08-23', 2, '80 Moonstone Ln'),
+(5, 'Marcus Chen', '2003-04-12', 11, '42 Riverside Dr'), 
+(6, 'Emily Rodriguez', '1998-11-30', 7, '156 Oak Street'),
+(7, 'James Patterson', '2005-06-15', 5, '29 Maple Ave'),
+(8, 'Sofia Gonzalez', '2001-09-08', 3, '93 Pine Ridge Rd'),
+(9, 'David Kim', '2006-02-27', 9, '67 Cedar Court'),
+(10, 'Isabella Martinez', '1999-12-05', 10, '14 Birch Lane'),
+(11, 'Ryan OSullivan', '2004-07-19', 5, '201 Willow Way'),
+(12, 'Aisha Patel', '2002-03-14', 4, '88 Elmwood Dr'),
+(13, 'Tyler Brooks', '2008-10-22', 8, '135 Sunset Blvd'),
+(14, 'Mia Thompson', '2000-05-31', 2, '76 Highland Ave'),
+(15, 'Nathan Lee', '2007-01-17', 1, '49 Valley View Rd');
 
 INSERT INTO PatientHistory(patient_id, allergies, family_history, notes)
 VALUES

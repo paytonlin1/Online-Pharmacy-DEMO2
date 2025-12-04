@@ -1,18 +1,18 @@
 USE pharmacy_testing;
 CREATE table doctor
-	(doctor_id INT UNIQUE,
+	(doctor_id INT UNIQUE AUTO_INCREMENT,
 	name VARCHAR(30),
 	dob DATE,
     PRIMARY KEY(doctor_id));
 
 CREATE table pharmacist
-	(pharmacist_id INT UNIQUE,
+	(pharmacist_id INT UNIQUE AUTO_INCREMENT,
 	name VARCHAR(30),
 	dob DATE,
     PRIMARY KEY(pharmacist_id));
     
 CREATE table Patient
-	(patient_id INT UNIQUE,
+	(patient_id INT UNIQUE AUTO_INCREMENT,
 	name VARCHAR(30),
 	dob date,
 	balance FLOAT(0),
@@ -23,7 +23,7 @@ CREATE table Patient
 		references doctor);
 
 CREATE table PatientHistory
-	(patient_id INT UNIQUE,
+	(patient_id INT UNIQUE AUTO_INCREMENT,
 	allergies VARCHAR(200),
     family_history VARCHAR(200),
 	notes VARCHAR(200),
@@ -32,10 +32,9 @@ CREATE table PatientHistory
 		references Patient);
 
 CREATE table prescriptions
-	(prescript_id INT UNIQUE,
+	(prescript_id INT UNIQUE AUTO_INCREMENT,
 	patient_id INT,
 	doctor_id INT,
-	price FLOAT(0),
     drug_id INT,
 	dosage INT,
     PRIMARY KEY(prescript_id),
@@ -56,7 +55,7 @@ CREATE table pharmacy
 	PRIMARY KEY(pharmacy_id));
 
 CREATE table orders
-	(order_id INT UNIQUE,
+	(order_id INT UNIQUE AUTO_INCREMENT,
 	request_date DATE,
 	pharmacy_id INT,
 	patient_id INT,
@@ -73,7 +72,7 @@ CREATE table orders
     FOREIGN KEY(pharmacist_id)
 		references pharmacist);
 
-
+-- DUMMY DATA
 INSERT INTO doctor(doctor_id, name, dob)
 VALUES
 (1, 'Hiro Tanaka', '1981-07-14'),

@@ -18,6 +18,22 @@
     />
   </head>
   <body>
+    <div class="top-header">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <small><i class="bi bi-telephone"></i> Call: 1-800-PHARMACY</small>
+            <small class="ms-3"
+              ><i class="bi bi-envelope"></i> info@pharmacy.com</small
+            >
+          </div>
+          <div class="col-md-6 text-end">
+            <small><i class="bi bi-clock"></i> Mon-Sat: 8AM - 8PM</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
       <div class="container">
         <a class="navbar-brand" href="{{ url_for('home') }}">
@@ -71,15 +87,29 @@
         </div>
       </div>
     </nav>
+    <div class="container my-3">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          title="close_alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
     <div class="container my-5">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2>My Dashboard</h2>
           <p class="text-muted">Welcome back, {{ patient.name }}</p>
         </div>
-        <button class="btn btn-primary">
-          <i class="bi bi-file-earmark-plus"></i> Upload Prescription
-        </button>
       </div>
 
       <div class="row mb-4">
@@ -141,9 +171,15 @@
                 </div>
                 <div>
                   <span class="badge bg-success">Active</span>
-                  <button class="btn btn-sm btn-outline-primary ms-2">
-                    Refill
-                  </button>
+                  <form
+                    action="{{ url_for('order_refill', prescription_id=prescription.prescript_id) }}"
+                    method="POST"
+                    style="display: inline"
+                  >
+                    <button type="submit" class="btn btn-sm btn-primary ms-2">
+                      Order Now
+                    </button>
+                  </form>
                 </div>
               </div>
             </div>
@@ -155,46 +191,52 @@
           </div>
         </div>
 
-        <div class="col-md-4 mb-4">
-          <div class="card mb-3">
-            <div class="card-header bg-white">
-              <h5 class="mb-0">Upcoming Refills</h5>
-            </div>
-            <div class="card-body">
-              <div class="alert alert-warning">
-                <strong>Metformin 500mg</strong>
-                <small class="d-block">Refill due in 3 days</small>
-                <button class="btn btn-sm btn-primary mt-2 w-100">
-                  Order Refill
-                </button>
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-white">
+                <h5 class="mb-0">Upcoming Refills</h5>
               </div>
-              <div class="alert alert-info mb-0">
-                <strong>Lisinopril 10mg</strong>
-                <small class="d-block">Refill due in 15 days</small>
-                <button class="btn btn-sm btn-outline-primary mt-2 w-100">
-                  Set Reminder
-                </button>
+              <div class="card-body">
+                <div class="alert alert-warning">
+                  <strong>Metformin 500mg</strong>
+                  <small class="d-block">Refill due in 3 days</small>
+                </div>
+                <div class="alert alert-info mb-0">
+                  <strong>Lisinopril 10mg</strong>
+                  <small class="d-block">Refill due in 15 days</small>
+                  <form action="">
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-outline-primary mt-2 w-100"
+                    >
+                      Set Reminder
+                    </button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="card">
-            <div class="card-header bg-white">
-              <h5 class="mb-0">Health Tips</h5>
-            </div>
-            <div class="card-body">
-              <p class="small mb-2">
-                <i class="bi bi-info-circle text-primary"></i> Take medications
-                at the same time daily
-              </p>
-              <p class="small mb-2">
-                <i class="bi bi-info-circle text-primary"></i> Store medications
-                in a cool, dry place
-              </p>
-              <p class="small mb-0">
-                <i class="bi bi-info-circle text-primary"></i> Always consult
-                your doctor before stopping medication
-              </p>
+          <div class="col-md-6 mb-3">
+            <div class="card">
+              <div class="card-header bg-white">
+                <h5 class="mb-0">Health Tips</h5>
+              </div>
+              <div class="card-body">
+                <p class="small mb-2">
+                  <i class="bi bi-info-circle text-primary"></i> Take
+                  medications at the same time daily
+                </p>
+                <p class="small mb-2">
+                  <i class="bi bi-info-circle text-primary"></i> Store
+                  medications in a cool, dry place
+                </p>
+                <p class="small mb-0">
+                  <i class="bi bi-info-circle text-primary"></i> Always consult
+                  your doctor before stopping medication
+                </p>
+              </div>
             </div>
           </div>
         </div>

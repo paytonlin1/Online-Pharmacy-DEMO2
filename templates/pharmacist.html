@@ -71,15 +71,29 @@
         </div>
       </div>
     </nav>
+    <div class="container my-3">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show"
+        role="alert"
+      >
+        {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          title="close_alert"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
     <div class="container my-5">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2>Pharmacist Dashboard</h2>
           <p class="text-muted">Welcome back, {{ pharmacist.name }}, RPh</p>
         </div>
-        <button class="btn btn-success">
-          <i class="bi bi-box-seam"></i> Process Order
-        </button>
       </div>
 
       <div class="row mb-4">
@@ -152,7 +166,27 @@
                       <td>{{ order.prescription.doctor.name }}</td>
                       <td><span class="badge bg-warning">Normal</span></td>
                       <td>
-                        <button class="btn btn-sm btn-success">Process</button>
+                        <form
+                          action="{{ url_for('process_order', order_id=order.order_id) }}"
+                          method="POST"
+                          style="display: inline"
+                        >
+                          <button
+                            type="submit"
+                            class="btn btn-sm btn-success me-1"
+                          >
+                            Process
+                          </button>
+                        </form>
+                        <button
+                          class="btn btn-sm btn-outline-info"
+                          data-bs-toggle="modal"
+                          data-bs-target="#viewHistoryModal{{ order.patient_id }}"
+                          name="order_id"
+                          title="view_patient_history"
+                        >
+                          <i class="bi bi-file-medical"></i>
+                        </button>
                       </td>
                     </tr>
                     {% endfor %}
@@ -203,6 +237,63 @@
         </div>
       </div>
     </div>
+    {% for order in pending_orders %}
+    <div
+      class="modal fade"
+      id="viewHistoryModal{{ order.patient_id }}"
+      tabindex="-1"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">
+              Patient History - {{ order.patient.name }}
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              name="patient_id"
+              title="view_patient_history"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <strong>Allergies:</strong>
+              <p>
+                {{ order.patient.history.allergies if order.patient.history else
+                'None recorded' }}
+              </p>
+            </div>
+            <div class="mb-3">
+              <strong>Family History:</strong>
+              <p>
+                {{ order.patient.history.family_history if order.patient.history
+                else 'None recorded' }}
+              </p>
+            </div>
+            <div class="mb-3">
+              <strong>Notes:</strong>
+              <p>
+                {{ order.patient.history.notes if order.patient.history else
+                'None recorded' }}
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+
     <script
       src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
       integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"

@@ -71,6 +71,23 @@ CREATE table orders
     FOREIGN KEY(pharmacist_id)
 		references pharmacist);
 
+CREATE table user
+	(user_id INT,
+    role ENUM('Patient', 'Doctor', 'Pharmacist'),
+    patient_id INT,
+    doctor_id INT, 
+    pharmacist_id INT,
+    username VARCHAR(50),
+    password VARCHAR(50),
+    PRIMARY KEY(user_id),
+    FOREIGN KEY(patient_id)
+		references Patient,
+	FOREIGN KEY(doctor_id)
+		references doctor,
+	FOREIGN KEY(pharmacist_id)
+		references pharmacist);
+
+
 -- DUMMY DATA
 INSERT INTO doctor(doctor_id, name, dob)
 VALUES
@@ -200,3 +217,49 @@ VALUES
 (13, '2025-02-27', 9, 1, 2, 4, 'Completed'),
 (14, '2025-12-06', 4, 3, 1, 5, 'Scheduled'),
 (15, '2025-11-14', 5, 1, 2, 2, 'Scheduled');
+
+INSERT into user(user_id, role, patient_id, username, password)
+VALUES
+(1, 'Patient', 1, 'nolanLe', 'password'),
+(2, 'Patient', 2, 'jsmith', 'pass123'),
+(3, 'Patient', 3, 'emilyd', 'secure456'),
+(4, 'Patient', 4, 'robertj', 'health789'),
+(5, 'Patient', 5, 'sarahm', 'care2024'),
+(6, 'Patient', 6, 'michaelb', 'wellness01'),
+(7, 'Patient', 7, 'lisac', 'patient22'),
+(8, 'Patient', 8, 'davidw', 'medical33'),
+(9, 'Patient', 9, 'jennifert', 'portal44'),
+(10, 'Patient', 10, 'chrisp', 'access55'),
+(11, 'Patient', 11, 'amandah', 'record66'),
+(12, 'Patient', 12, 'jamesm', 'system77'),
+(13, 'Patient', 13, 'laurak', 'login88'),
+(14, 'Patient', 14, 'thomasn', 'entry99'),
+(15, 'Patient', 15, 'jessicaa', 'data2025');
+
+INSERT into user(user_id, role, doctor_id, username, password)
+VALUES
+(16, 'Doctor', 1, 'htdabest', 'pass'),
+(17, 'Doctor', 2, 'drjohnson', 'med2024'),
+(18, 'Doctor', 3, 'drbrown', 'clinic01'),
+(19, 'Doctor', 4, 'drgarcia', 'health22'),
+(20, 'Doctor', 5, 'drlee', 'practice33'),
+(21, 'Doctor', 6, 'drwilson', 'doctor44'),
+(22, 'Doctor', 7, 'drmartinez', 'medical55'),
+(23, 'Doctor', 8, 'dranderson', 'care66'),
+(24, 'Doctor', 9, 'drthomas', 'physician77'),
+(25, 'Doctor', 10, 'drtaylor', 'staff88'),
+(26, 'Doctor', 11, 'drmoore', 'hospital99');
+
+INSERT into user(user_id, role, pharmacist_id, username, password)
+VALUES
+(27, 'Pharmacist', 1, 'username', 'mypassword'),
+(28, 'Pharmacist', 2, 'pharma_jones', 'pills123'),
+(29, 'Pharmacist', 3, 'rxtech_kim', 'meds456'),
+(30, 'Pharmacist', 4, 'pharmD_alex', 'script789'),
+(31, 'Pharmacist', 5, 'medtech_ryan', 'dispense01'),
+(32, 'Pharmacist', 6, 'pharmacist_emma', 'pharmacy22'),
+(33, 'Pharmacist', 7, 'rx_manager', 'counter33'),
+(34, 'Pharmacist', 8, 'pill_pro', 'medicine44'),
+(35, 'Pharmacist', 9, 'drug_expert', 'dosage55'),
+(36, 'Pharmacist', 10, 'pharm_carol', 'refill66');
+

@@ -1,0 +1,61 @@
+document.addEventListener('DOMContentLoaded', function() {
+  // Smooth scrolling for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({
+          behavior: 'smooth'
+        });
+      }
+    });
+  });
+
+  // Patient history display on new prescription page
+  const patientSelect = document.getElementById('patientSelect');
+  
+  if (patientSelect) {
+    console.log('Patient select found');
+    const patientHistoriesData = document.body.getAttribute('data-patient-histories');
+    console.log('Patient histories data:', patientHistoriesData);
+    
+    if (patientHistoriesData) {
+      const patientHistories = JSON.parse(patientHistoriesData);
+      console.log('Parsed patient histories:', patientHistories);
+
+      patientSelect.addEventListener('change', function() {
+        const patientId = this.value;
+        console.log('Selected patient ID:', patientId);
+        console.log('Looking for history:', patientHistories[patientId]);
+        
+        const historyCard = document.getElementById('patientHistoryCard');
+        const noPatientCard = document.getElementById('noPatientCard');
+        
+        if (patientId && patientHistories[patientId]) {
+          // Show history
+          const history = patientHistories[patientId];
+          console.log('Displaying history:', history);
+          
+          document.getElementById('allergiesDisplay').textContent = history.allergies;
+          document.getElementById('familyHistoryDisplay').textContent = history.family_history;
+          document.getElementById('notesDisplay').textContent = history.notes;
+          
+          // Toggle cards
+          historyCard.style.display = 'block';
+          noPatientCard.style.display = 'none';
+          console.log('History card should now be visible');
+        } else {
+          // Hide history if no patient selected
+          console.log('No patient selected or no history found');
+          historyCard.style.display = 'none';
+          noPatientCard.style.display = 'block';
+        }
+      });
+    } else {
+      console.log('No patient histories data found');
+    }
+  } else {
+    console.log('Patient select element not found');
+  }
+});

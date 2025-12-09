@@ -1,4 +1,5 @@
 USE pharmacy_testing;
+
 CREATE table doctor
 	(doctor_id INT UNIQUE AUTO_INCREMENT,
 	name VARCHAR(30),
@@ -11,7 +12,7 @@ CREATE table pharmacist
 	dob DATE,
     PRIMARY KEY(pharmacist_id));
     
-CREATE table Patient
+CREATE table patient
 	(patient_id INT UNIQUE AUTO_INCREMENT,
 	name VARCHAR(30),
 	dob date,
@@ -19,16 +20,32 @@ CREATE table Patient
 	primary_address VARCHAR(100),
 	PRIMARY KEY(patient_id), 
 	FOREIGN KEY(doctor_id) 
-		references doctor);
+		references doctor(doctor_id));
 
-CREATE table PatientHistory
+CREATE table user
+	(user_id INT UNIQUE AUTO_INCREMENT, 
+	patient_id INT,
+	doctor_id INT,
+	pharmacist_id INT,
+	username VARCHAR(30) UNIQUE,
+	upassword varchar(80),
+	role ENUM("Patient","Doctor","Pharmacist"),
+	PRIMARY KEY (user_id),
+	FOREIGN KEY(doctor_id)
+		references doctor(doctor_id),
+	FOREIGN KEY(patient_id)
+		references patient(patient_id),
+	FOREIGN KEY(pharmacist_id)
+		references pharmacist(pharmacist_id));
+
+CREATE table patientHistory
 	(patient_id INT UNIQUE AUTO_INCREMENT,
 	allergies VARCHAR(200),
     family_history VARCHAR(200),
 	notes VARCHAR(200),
 	PRIMARY KEY(patient_id), 
     FOREIGN KEY(patient_id) 
-		references Patient);
+		references patient(patient_id));
 
 CREATE table prescriptions
 	(prescript_id INT UNIQUE AUTO_INCREMENT,
@@ -38,9 +55,9 @@ CREATE table prescriptions
 	dosage INT,
     PRIMARY KEY(prescript_id),
     FOREIGN KEY(patient_id) 
-		references Patient,
+		references patient(patient_id),
 	FOREIGN KEY(doctor_id)
-		references doctor);
+		references doctor(doctor_id));
 
 CREATE table drug
 	(drug_id INT UNIQUE,
@@ -63,13 +80,13 @@ CREATE table orders
 	status ENUM("Cancelled", "Scheduled", "Completed"),
     PRIMARY KEY(order_id),
     FOREIGN KEY(pharmacy_id)
-		references pharmacy,
+		references pharmacy(pharmacy_id),
     FOREIGN KEY(patient_id)
-		references Patient,
+		references patient(patient_id),
     FOREIGN KEY(prescript_id)
-		references prescriptions,
+		references prescriptions(prescript_id),
     FOREIGN KEY(pharmacist_id)
-		references pharmacist);
+		references pharmacist(pharmacist_id));
 
 -- DUMMY DATA
 INSERT INTO doctor(doctor_id, name, dob)
@@ -117,7 +134,46 @@ VALUES
 (14, 'Mia Thompson', '2000-05-31', 2, '76 Highland Ave'),
 (15, 'Nathan Lee', '2007-01-17', 1, '49 Valley View Rd');
 
-INSERT INTO PatientHistory(patient_id, allergies, family_history, notes)
+INSERT INTO user(user_id, role, patient_id, doctor_id, pharmacist_id, username, upassword)
+VALUES
+(1, 'Patient', 1, null, null, 'patient_demo', 'demopass'),
+(2, 'Patient', 2, null, null, 'jsmith', 'pass123'),
+(3, 'Patient', 3, null, null, 'emilyd', 'secure456'),
+(4, 'Patient', 4, null, null, 'robertj', 'health789'),
+(5, 'Patient', 5, null, null, 'sarahm', 'care2024'),
+(6, 'Patient', 6, null, null, 'michaelb', 'wellness01'),
+(7, 'Patient', 7, null, null, 'lisac', 'patient22'),
+(8, 'Patient', 8, null, null, 'davidw', 'medical33'),
+(9, 'Patient', 9, null, null, 'jennifert', 'portal44'),
+(10, 'Patient', 10, null, null, 'chrisp', 'access55'),
+(11, 'Patient', 11, null, null, 'amandah', 'record66'),
+(12, 'Patient', 12, null, null, 'jamesm', 'system77'),
+(13, 'Patient', 13, null, null, 'laurak', 'login88'),
+(14, 'Patient', 14, null, null, 'thomasn', 'entry99'),
+(15, 'Patient', 15, null, null, 'jessicaa', 'data2025'),
+(16, 'Doctor', null, 1, null, 'doctor_demo', 'demopass'),
+(17, 'Doctor', null, 2, null, 'drjohnson', 'med2024'),
+(18, 'Doctor', null, 3, null, 'drbrown', 'clinic01'),
+(19, 'Doctor', null, 4, null, 'drgarcia', 'health22'),
+(20, 'Doctor', null, 5, null, 'drlee', 'practice33'),
+(21, 'Doctor', null, 6, null, 'drwilson', 'doctor44'),
+(22, 'Doctor', null, 7, null, 'drmartinez', 'medical55'),
+(23, 'Doctor', null, 8, null, 'dranderson', 'care66'),
+(24, 'Doctor', null, 9, null, 'drthomas', 'physician77'),
+(25, 'Doctor', null, 10, null, 'drtaylor', 'staff88'),
+(26, 'Doctor', null, 11, null, 'drmoore', 'hospital99'),
+(27, 'Pharmacist', null, null, 1, 'pharmacist_demo', 'demopass'),
+(28, 'Pharmacist', null, null, 2, 'pharma', 'pills123'),
+(29, 'Pharmacist', null, null, 3, 'rxtech_kim', 'meds456'),
+(30, 'Pharmacist', null, null, 4, 'pharmD', 'script789'),
+(31, 'Pharmacist', null, null, 5, 'medtech', 'dispense01'),
+(32, 'Pharmacist', null, null, 6, 'pharmac', 'pharmacy22'),
+(33, 'Pharmacist', null, null, 7, 'rx_mana', 'counter33'),
+(34, 'Pharmacist', null, null, 8, 'pill_pro', 'medicine44'),
+(35, 'Pharmacist', null, null, 9, 'drug_expert', 'dosage55'),
+(36, 'Pharmacist', null, null, 10, 'pharm_c', 'refill66');
+
+INSERT INTO patientHistory(patient_id, allergies, family_history, notes)
 VALUES
 (1, 'Peanuts shellfish', 'Type I diabetes', 'N/A'),
 (2, 'N/A', 'N/A', 'N/A'),

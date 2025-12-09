@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}New Prescription{% endblock %}</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <i class="bi bi-heart-pulse-fill text-primary"></i>
+          <strong>Online</strong> Pharmacy [DEMO]
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          title="toggle"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="bi bi-house"></i> Home
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/doctor_dashboard">
+                <i class="bi bi-person-badge"></i> Doctor Portal
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/pharmacist_dashboard">
+                <i class="bi bi-capsule"></i> Pharmacist Portal
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/patient_dashboard">
+                <i class="bi bi-person-circle"></i> Patient Portal
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-4">
+      <div class="row">
+        <!-- Prescription Form -->
+        <div class="col-md-7">
+          <div class="card">
+            <div class="card-header bg-primary text-white">
+              <h3 class="mb-0">
+                <i class="bi bi-file-earmark-medical"></i> Create New
+                Prescription
+              </h3>
+            </div>
+            <div class="card-body">
+              <form action="{{ url_for('create_prescription') }}" method="POST">
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-person"></i> Patient
+                  </label>
+                  <select
+                    class="form-select"
+                    name="patient_id"
+                    id="patientSelect"
+                    title="Patient"
+                    required
+                  >
+                    <option value="">Select Patient</option>
+                    {% for patient in all_patients %}
+                    <option value="{{ patient.patient_id }}">
+                      {{ patient.name }}
+                    </option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-capsule"></i> Drug
+                  </label>
+                  <select
+                    class="form-select"
+                    name="drug_id"
+                    title="Drug"
+                    required
+                  >
+                    <option value="">Select Drug</option>
+                    {% for drug in all_drugs %}
+                    <option value="{{ drug.drug_id }}">{{ drug.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">
+                    <i class="bi bi-prescription2"></i> Dosage (mg)
+                  </label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="dosage"
+                    title="Dosage"
+                    placeholder="Enter dosage in mg"
+                    required
+                  />
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary">
+                    Create Prescription
+                  </button>
+                  <a href="/doctor_dashboard" class="btn btn-secondary">
+                    Cancel
+                  </a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Patient History -->
+        <div class="col-md-5">
+          <div class="card" id="patientHistoryCard" style="display: none">
+            <div class="card-header bg-info text-white">
+              <h5 class="mb-0">
+                <i class="bi bi-clipboard-pulse"></i> Patient History
+              </h5>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <h6 class="text-primary">
+                  <i class="bi bi-exclamation-triangle"></i> Allergies
+                </h6>
+                <p id="allergiesDisplay" class="mb-0 p-2 bg-light rounded">
+                  No allergies recorded
+                </p>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="text-primary">
+                  <i class="bi bi-people"></i> Family History
+                </h6>
+                <p id="familyHistoryDisplay" class="mb-0 p-2 bg-light rounded">
+                  No family history recorded
+                </p>
+              </div>
+
+              <div class="mb-3">
+                <h6 class="text-primary">
+                  <i class="bi bi-journal-text"></i> Notes
+                </h6>
+                <p id="notesDisplay" class="mb-0 p-2 bg-light rounded">
+                  No notes recorded
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Placeholder when no patient selected -->
+          <div class="card" id="noPatientCard">
+            <div class="card-body text-center text-muted py-5">
+              <i class="bi bi-person-x" style="font-size: 3rem"></i>
+              <h5 class="mt-3">No Patient Selected</h5>
+              <p>Select a patient to view their medical history</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script id="patient-data" type="application/json">
+      {{ patient_histories | tojson }}
+    </script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const patientSelect = document.getElementById("patientSelect");
+
+        if (patientSelect) {
+          console.log("Patient select found");
+
+          // Read from script tag instead of body attribute
+          const patientDataElement = document.getElementById("patient-data");
+          const patientHistoriesData = patientDataElement
+            ? patientDataElement.textContent
+            : null;
+
+          console.log("Patient histories data:", patientHistoriesData);
+
+          if (patientHistoriesData) {
+            const patientHistories = JSON.parse(patientHistoriesData);
+            console.log("Parsed patient histories:", patientHistories);
+
+            patientSelect.addEventListener("change", function () {
+              const patientId = this.value;
+              console.log("Selected patient ID:", patientId);
+              console.log("Looking for history:", patientHistories[patientId]);
+
+              const historyCard = document.getElementById("patientHistoryCard");
+              const noPatientCard = document.getElementById("noPatientCard");
+
+              if (patientId && patientHistories[patientId]) {
+                // Show history
+                const history = patientHistories[patientId];
+                console.log("Displaying history:", history);
+
+                document.getElementById("allergiesDisplay").textContent =
+                  history.allergies;
+                document.getElementById("familyHistoryDisplay").textContent =
+                  history.family_history;
+                document.getElementById("notesDisplay").textContent =
+                  history.notes;
+
+                // Toggle cards
+                historyCard.style.display = "block";
+                noPatientCard.style.display = "none";
+                console.log("History card should now be visible");
+              } else {
+                // Hide history if no patient selected
+                console.log("No patient selected or no history found");
+                historyCard.style.display = "none";
+                noPatientCard.style.display = "block";
+              }
+            });
+          } else {
+            console.log("No patient histories data found");
+          }
+        } else {
+          console.log("Patient select element not found");
+        }
+      });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+    <!-- <script src="{{ url_for('static', filename='js/script.js') }}"></script> -->
+  </body>
+</html>

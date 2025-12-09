@@ -34,6 +34,18 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
+          <form class="d-flex mx-auto" action="{{ url_for('search') }}" method="GET" style="max-width: 400px;">
+            <input 
+              class="form-control me-2" 
+              type="search" 
+              placeholder="Search..." 
+              name="q"
+              value="{{ request.args.get('q', '') }}"
+            >
+            <button class="btn btn-outline-primary" type="submit" title="search">
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
               <a

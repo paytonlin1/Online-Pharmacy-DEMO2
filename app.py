@@ -165,14 +165,29 @@ def login():
             session['username'] = user.username
             session['role'] = user.role
             
-            flash(f'Welcome back, {user.username}!', 'success')
+            person_name = user.username  # Default to username if no match
+            
+            if user.role == 'Doctor' and user.doctor_id:
+                doctor = Doctor.query.get(user.doctor_id)
+                if doctor:
+                    person_name = doctor.name
+            elif user.role == 'Patient' and user.patient_id:
+                patient = Patient.query.get(user.patient_id)
+                if patient:
+                    person_name = patient.name
+            elif user.role == 'Pharmacist' and user.pharmacist_id:
+                pharmacist = Pharmacist.query.get(user.pharmacist_id)
+                if pharmacist:
+                    person_name = pharmacist.name
+            
+            flash(f'Welcome back, {person_name}!', 'success')
             
             # Redirect based on role
-            if user.role == 'doctor':
+            if user.role == 'Doctor':
                 return redirect(url_for('doctor_dashboard'))
-            elif user.role == 'patient':
+            elif user.role == 'Patient':
                 return redirect(url_for('patient_dashboard'))
-            elif user.role == 'pharmacist':
+            elif user.role == 'Pharmacist':
                 return redirect(url_for('pharmacist_dashboard'))
             else:
                 return redirect(url_for('home'))
@@ -200,14 +215,44 @@ def register():
             flash('Username already exists', 'danger')
             return redirect(url_for('register'))
         
+        entity_id = None
+        
+        if role == 'Doctor':
+            new_doctor = Doctor(name=username, dob=date.today())  # Use username as name for now
+            db.session.add(new_doctor)
+            db.session.flush()  # Get the ID before committing
+            entity_id = new_doctor.doctor_id
+            
+            new_user = User(
+                username=username,
+                upassword=password,
+                role=role,
+                doctor_id=entity_id
+            )
+        elif role == 'Patient':
+            new_patient = Patient(name=username, dob=date.today())
+            db.session.add(new_patient)
+            db.session.flush()
+            entity_id = new_patient.patient_id
+            
+            new_user = User(
+                username=username,
+                upassword=password,
+                role=role,
+                patient_id=entity_id
+            )
+        elif role == 'Pharmacist':
+            new_pharmacist = Pharmacist(name=username, dob=date.today())
+            db.session.add(new_pharmacist)
+            db.session.flush()
+            entity_id = new_pharmacist.pharmacist_id
+
         # Create new user with password
         new_user = User(
             username=username,
-            password=password,
+            upassword=password,
             role=role
         )
-        
-        db.session.add(new_user)
         db.session.commit()
         
         flash('Registration successful! Please log in.', 'success')
@@ -494,6 +539,38 @@ def create_prescription():
 
     flash('Prescription created successfully!', 'success')
     return redirect(url_for('doctor_dashboard'))
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('q', '').strip()
+    
+    if not query:
+        flash('Please enter a search term', 'warning')
+        return redirect(url_for('home'))
+
+    patients = Patient.query.filter(Patient.name.ilike(f'%{query}%')).all()
+    doctors = Doctor.query.filter(Doctor.name.ilike(f'%{query}%')).all()
+    drugs = Drug.query.filter(
+        db.or_(
+            Drug.name.ilike(f'%{query}%'),
+            Drug.common_ailment.ilike(f'%{query}%')
+        )
+    ).all()
+    prescriptions = db.session.query(Prescription).join(
+        Patient
+    ).join(Drug).filter(
+        db.or_(
+            Patient.name.ilike(f'%{query}%'),
+            Drug.name.ilike(f'%{query}%')
+        )
+    ).all()
+    
+    return render_template('search_results.html',
+                         query=query,
+                         patients=patients,
+                         doctors=doctors,
+                         drugs=drugs,
+                         prescriptions=prescriptions)
 
 if __name__ == '__main__':
     app.run(debug=True)

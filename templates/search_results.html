@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Results - {{ query }}</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <i class="bi bi-heart-pulse-fill text-primary"></i>
+          <strong>Online</strong> Pharmacy [DEMO]
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          title="toggle"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <form
+            class="d-flex mx-auto"
+            action="{{ url_for('search') }}"
+            method="GET"
+            style="max-width: 400px"
+          >
+            <input
+              class="form-control me-2"
+              type="search"
+              placeholder="Search patients, doctors, drugs..."
+              name="q"
+              value="{{ query }}"
+            />
+            <button
+              class="btn btn-outline-primary"
+              type="submit"
+              title="submit"
+            >
+              <i class="bi bi-search"></i>
+            </button>
+          </form>
+
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="bi bi-house"></i> Home
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container my-5">
+      <h2 class="mb-4">Search Results for "{{ query }}"</h2>
+
+      <!-- Patients -->
+      {% if patients %}
+      <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-people"></i> Patients ({{ patients|length }})
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date of Birth</th>
+                  <th>Address</th>
+                  <th>Doctor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for patient in patients %}
+                <tr>
+                  <td>{{ patient.name }}</td>
+                  <td>{{ patient.dob }}</td>
+                  <td>{{ patient.primary_address }}</td>
+                  <td>
+                    {{ patient.doctor.name if patient.doctor else 'N/A' }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Doctors -->
+      {% if doctors %}
+      <div class="card mb-4">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-person-badge"></i> Doctors ({{ doctors|length }})
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Date of Birth</th>
+                  <th>Patients</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for doctor in doctors %}
+                <tr>
+                  <td>{{ doctor.name }}</td>
+                  <td>{{ doctor.dob }}</td>
+                  <td>{{ doctor.patients|length }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Drugs -->
+      {% if drugs %}
+      <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-capsule"></i> Drugs ({{ drugs|length }})
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Common Ailment</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for drug in drugs %}
+                <tr>
+                  <td>{{ drug.name }}</td>
+                  <td>{{ drug.common_ailment }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Prescriptions -->
+      {% if prescriptions %}
+      <div class="card mb-4">
+        <div class="card-header bg-warning text-white">
+          <h5 class="mb-0">
+            <i class="bi bi-file-text"></i> Prescriptions ({{
+            prescriptions|length }})
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Patient</th>
+                  <th>Drug</th>
+                  <th>Dosage</th>
+                  <th>Doctor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for prescription in prescriptions %}
+                <tr>
+                  <td>{{ prescription.patient.name }}</td>
+                  <td>{{ prescription.drug.name }}</td>
+                  <td>{{ prescription.dosage }}mg</td>
+                  <td>{{ prescription.doctor.name }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- No results -->
+      {% if not patients and not doctors and not drugs and not prescriptions %}
+      <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle"></i> No results found for "{{
+        query }}". Try a different search term.
+      </div>
+      {% endif %} {% if session.role == 'Doctor' %}
+      <a href="{{ url_for('doctor_dashboard') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+      {% elif session.role == 'Patient' %}
+      <a href="{{ url_for('patient_dashboard') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+      {% elif session.role == 'Pharmacist' %}
+      <a href="{{ url_for('pharmacist_dashboard') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+      {% else %}
+      <a href="{{ url_for('home') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Home
+      </a>
+      {% endif %}
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

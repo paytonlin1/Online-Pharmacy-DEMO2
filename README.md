@@ -42,6 +42,7 @@ python app.py
 * Insurance and billing support
 * Inventory tracking and management
 * Built-in pickup scheduling
+* Add profile editing/customization
 * Add prescription fulfillment date connection for tracking
 * Automated allergy and drug interaction alerts
 * Adding security for user authentication

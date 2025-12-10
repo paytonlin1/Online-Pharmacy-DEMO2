@@ -143,7 +143,9 @@
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2>My Dashboard</h2>
-          <p class="text-muted">Welcome back, {{ patient.name }}</p>
+          <p class="text-muted">
+            Welcome back, {{ patient.name if patient else session.username }}
+          </p>
         </div>
       </div>
 

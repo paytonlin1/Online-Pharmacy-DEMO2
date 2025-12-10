@@ -206,7 +206,7 @@ def logout():
 def register():
     if request.method == 'POST':
         username = request.form.get('username')
-        password = request.form.get('password')
+        password = request.form.get('upassword')
         role = request.form.get('role')
         
         # Check if username already exists
@@ -215,51 +215,50 @@ def register():
             flash('Username already exists', 'danger')
             return redirect(url_for('register'))
         
-        entity_id = None
-        
-        if role == 'Doctor':
-            new_doctor = Doctor(name=username, dob=date.today())  # Use username as name for now
+        if role == 'doctor': 
+            new_doctor = Doctor(name=username, dob=date.today())
             db.session.add(new_doctor)
-            db.session.flush()  # Get the ID before committing
-            entity_id = new_doctor.doctor_id
+            db.session.flush()  
             
             new_user = User(
                 username=username,
                 upassword=password,
-                role=role,
-                doctor_id=entity_id
+                role='Doctor',  
+                doctor_id=new_doctor.doctor_id
             )
-        elif role == 'Patient':
+        elif role == 'patient':  
             new_patient = Patient(name=username, dob=date.today())
             db.session.add(new_patient)
             db.session.flush()
-            entity_id = new_patient.patient_id
             
             new_user = User(
                 username=username,
                 upassword=password,
-                role=role,
-                patient_id=entity_id
+                role='Patient',  
+                patient_id=new_patient.patient_id
             )
-        elif role == 'Pharmacist':
+        elif role == 'pharmacist':  
             new_pharmacist = Pharmacist(name=username, dob=date.today())
             db.session.add(new_pharmacist)
             db.session.flush()
-            entity_id = new_pharmacist.pharmacist_id
-
-        # Create new user with password
-        new_user = User(
-            username=username,
-            upassword=password,
-            role=role
-        )
+            
+            new_user = User(
+                username=username,
+                upassword=password,
+                role='Pharmacist',  
+                pharmacist_id=new_pharmacist.pharmacist_id
+            )
+        else:
+            flash('Invalid role selected', 'danger')
+            return redirect(url_for('register'))
+        
+        db.session.add(new_user)
         db.session.commit()
         
         flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('login'))
     
     return render_template('register.html')
-
 @app.route('/doctor_dashboard')
 @login_required
 @role_required('Doctor')

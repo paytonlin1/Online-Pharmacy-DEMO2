@@ -1,18 +1,18 @@
-# Online Pharmacy [DEMO]
+# 💊💉Online Pharmacy [DEMO]
 ### Created by: Nolan Le, Jeremy Matloub, Payton Lin
 * For University of Pittsburgh - INFSCI 1500 FALL 2025
 
-## Description:
+## 📋Description:
 * The following demo is our implementation of an online pharmacy. This is a demo version and does not have full functionality. The main purpose is to model proper data handling via a MySQL database.
 
-## Development Stack
+## 🛠️Development Stack
 
 * **FRONTEND**: Bootstrap.js + JavaScript
 * **BACKEND**: Python + Flask
 * **DATABASE**: MySQL
 * **PACKAGES**: SQLAlchemy
 
-## Setup
+## 🚀Setup
 
 ```bash
 git clone https://github.com/paytonlin1/Online-Pharmacy-DEMO2.git
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-## Assumptions
+## 🤔Assumptions
 * Users only use the dashboard that corresponds to their role.
 * All doctors and pharmacists in the system are accordingly verified employees
 * Each patient is associated with exactly one primary doctor.
@@ -37,9 +37,11 @@ python app.py
 * Each order corresponds to exactly one prescription.s
 * All user inputs are via drop-down menus, preventing malformed submissions.
 
-## Improvements
+## 🎯Improvements
 * Integrating real-world drug prices
 * Insurance and billing support
 * Inventory tracking and management
 * Built-in pickup scheduling
 * Automated allergy and drug interaction alerts
+* Adding security for user authentication
+  * Hashed passwords, etc.
